@@ -175,8 +175,16 @@ impl TPMPolicyStep {
                             },
                         };
                         */
-                        let dummy_ticket = get_dummy_ticket(ctx);
-                        (Digest::try_from(vec![])?, dummy_ticket)
+                        //let dummy_ticket = get_dummy_ticket(ctx);
+                        let null_ticket = tss_esapi::tss2_esys::TPMT_TK_VERIFIED {
+                            tag: tss_esapi::constants::tss::TPM2_ST_VERIFIED,
+                            hierarchy: tss_esapi::tss2_esys::ESYS_TR_RH_NULL,
+                            digest: tss_esapi::tss2_esys::TPM2B_DIGEST {
+                                size: 32,
+                                buffer: [0; 64],
+                            },
+                        };
+                        (Digest::try_from(vec![])?, null_ticket.try_into()?)
                     }
                     Some(policies) => find_and_play_applicable_policy(
                         ctx,
